@@ -172,7 +172,7 @@ namespace write_private {
     void writeBuffer() {
         size_t printed = 0;
         while (printed < current_pos) {
-            printed += fwrite(output_buf, 1, buf_size, stdout);
+            printed += fwrite(output_buf, 1, current_pos - printed, stdout);
         }
         current_pos = 0;
     }
@@ -246,6 +246,7 @@ namespace write_private {
     }
 
 }
+
 
 template <int N>
 void write(const char (&arr)[N]) {
