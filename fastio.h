@@ -12,7 +12,7 @@
 
 /** Interface */
 
-template <typename T> T read();
+template <typename T = int> T read();
 template <typename T> void read(T &head);
 template <typename T, typename ...Types> void read(T &head, Types &...tail);
 template <typename T> std::vector<T> readVector(size_t n);
@@ -118,7 +118,7 @@ namespace read_private {
 
 }
 
-template<typename T = int>
+template<typename T>
 T read() {
     if constexpr (std::is_same<T, char>::value) {
         return read_private::readChar();
@@ -303,15 +303,15 @@ void writelnSep(char sep, const T &head, const Types &...tail) {
     writelnSep(sep, tail...);
 }
 
-template <typename T, typename C = int64_t>
-void writeFloatingPoint(const T &elem, size_t decimalPlaces = 6) {
+template <typename T, typename C>
+void writeFloatingPoint(const T &elem, size_t decimalPlaces) {
     static_assert(std::is_floating_point<T>::value, "T must be floating point");
     static_assert(std::is_integral<C>::value, "C must be integral");
     write_private::writeFloatingPoint<T, C>(elem, decimalPlaces);
 }
 
 template <typename T>
-void writeVector(const std::vector<T> &vec, const std::string& sep = " ", const std::string& end = "\n") {
+void writeVector(const std::vector<T> &vec, const std::string& sep, const std::string& end) {
     bool isFirst = true;
     for (const T &elem : vec) {
         if (!isFirst) {
