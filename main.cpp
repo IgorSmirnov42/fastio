@@ -11,7 +11,7 @@ int main() {
     }
     {
         auto n = read<long long>();
-        assert(n == 42);
+        assert(n == -42);
     }
     {
         auto n = read<__int128_t>();
@@ -37,13 +37,28 @@ int main() {
         assert(n == 11 && s == "aab");
     }
     {
+        float n;
+        read(n);
+        assert(fabs(n - 3.444) < 1e-4);
+    }
+    {
+        float n;
+        read(n);
+        assert(fabs(n + 0.5) < 1e-4);
+    }
+    {
+        float n;
+        read(n);
+        assert(fabs(n - 0.5) < 1e-4);
+    }
+    {
         int n;
         char c;
         double x;
         string t;
         __int128_t d;
         read(n, c,  x,t, d);
-        assert(n == 1 && c == '0' && t == "999" && fabs(x - 3.333) < 1e-4 && d == 7);
+        assert(n == 1 && c == '0' && t == "999" && fabs(x + 3.333) < 1e-4 && d == 7);
     }
     {
         auto vec = readVector<int>(5);
@@ -54,4 +69,14 @@ int main() {
         readVector(vec);
         assert(vec == std::vector<int>({5, 4, 3, 2, 1}));
     }
+    writeSep(' ', 0, 1, 2, 3);
+    write("\n");
+    write(0.5, '\n');
+    write("Hello", " world");
+    write('\n');
+    writeSep(' ',-1, -0.5, 0.0, 19);
+    writeVector(vector<int>{0, 1, 2}, " ", "\n");
+    writelnSep(' ', 1, 2, 3);
+    writeln(2, 3, 9);
+    writeln("hello");
 }
