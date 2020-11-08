@@ -10,6 +10,24 @@
 #include <string>
 #include <vector>
 
+/** Interface */
+
+template <typename T> T read();
+template <typename T> void read(T &head);
+template <typename T, typename ...Types> void read(T &head, Types &...tail);
+template <typename T> std::vector<T> readVector(size_t n);
+template <typename T> void readVector(std::vector<T> &vec);
+template <int N> void write(const char (&arr)[N]);
+template<typename T> void write(const T &elem);
+template <typename T, typename ...Types> void write(const T &head, const Types &...tail);
+template <typename T> void writeSep(char sep, const T &head);
+template <typename T, typename ...Types> void writeSep(char sep, const T &head, const Types &...tail);
+template <typename T> void writelnSep(char sep, const T &head);
+template <typename T, typename ...Types> void writelnSep(char sep, const T &head, const Types &...tail);
+template <typename T, typename C = int64_t> void writeFloatingPoint(const T &elem, size_t decimalPlaces = 6);
+template <typename T> void writeVector(const std::vector<T> &vec, const std::string& sep = " ", const std::string& end = "\n");
+template <typename ...Types> void writeln(const Types &...tail);
+
 /** Read */
 
 namespace read_private {
