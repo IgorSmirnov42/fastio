@@ -108,6 +108,7 @@ namespace read_private {
 
     inline std::string readString() {
         std::vector<char> result;
+        result.reserve(20);
         int chr = readChar();
         while (chr > 32) {
             result.push_back(chr);
