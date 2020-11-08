@@ -12,29 +12,29 @@
 
 /** Interface */
 
-template <typename T = int> T read();
-template <typename T> void read(T &head);
-template <typename T, typename ...Types> void read(T &head, Types &...tail);
-template <typename T> std::vector<T> readVector(size_t n);
-template <typename T> void readVector(std::vector<T> &vec);
-template <int N> void write(const char (&arr)[N]);
-template<typename T> void write(const T &elem);
-template <typename T, typename ...Types> void write(const T &head, const Types &...tail);
-template <typename T> void writeSep(char sep, const T &head);
-template <typename T, typename ...Types> void writeSep(char sep, const T &head, const Types &...tail);
-template <typename T> void writelnSep(char sep, const T &head);
-template <typename T, typename ...Types> void writelnSep(char sep, const T &head, const Types &...tail);
-template <typename T, typename C = int64_t> void writeFloatingPoint(const T &elem, size_t decimalPlaces = 6);
-template <typename T> void writeVector(const std::vector<T> &vec, const std::string& sep = " ", const std::string& end = "\n");
-template <typename ...Types> void writeln(const Types &...tail);
+template <typename T = int> inline T read();
+template <typename T> inline void read(T &head);
+template <typename T, typename ...Types> inline void read(T &head, Types &...tail);
+template <typename T> inline std::vector<T> readVector(uint32_t n);
+template <typename T> inline void readVector(std::vector<T> &vec);
+template <int N> inline void write(const char (&arr)[N]);
+template<typename T> inline void write(const T &elem);
+template <typename T, typename ...Types> inline void write(const T &head, const Types &...tail);
+template <typename T> inline void writeSep(char sep, const T &head);
+template <typename T, typename ...Types> inline void writeSep(char sep, const T &head, const Types &...tail);
+template <typename T> inline void writelnSep(char sep, const T &head);
+template <typename T, typename ...Types> inline void writelnSep(char sep, const T &head, const Types &...tail);
+template <typename T, typename C = int64_t> inline void writeFloatingPoint(const T &elem, size_t decimalPlaces = 6);
+template <typename T> inline void writeVector(const std::vector<T> &vec, const std::string& sep = " ", const std::string& end = "\n");
+template <typename ...Types> inline void writeln(const Types &...tail);
 
 /** Read */
 
 namespace read_private {
 
     static const int buf_size = 4096;
-    static size_t current_pos = 0;
-    static size_t current_len = 0;
+    static uint32_t current_pos = 0;
+    static uint32_t current_len = 0;
     static int lastChar = 0;
     static unsigned char input_buf[buf_size];
 
@@ -107,20 +107,21 @@ namespace read_private {
     }
 
     inline std::string readString() {
-        std::vector<char> result;
-        result.reserve(20);
+        static char result[int(1e6 + 42)];
+        int pos = 0;
         int chr = readChar();
         while (chr > 32) {
-            result.push_back(chr);
+            result[pos++] = chr;
             chr = nextChar();
         }
-        return std::string(result.begin(), result.end());
+        result[pos] = 0;
+        return std::string(result);
     }
 
 }
 
 template<typename T>
-T read() {
+inline T read() {
     if constexpr (std::is_same<T, char>::value) {
         return read_private::readChar();
     }
@@ -136,27 +137,27 @@ T read() {
 }
 
 template <typename T>
-void read(T &head) {
+inline void read(T &head) {
     head = read<T>();
 }
 
 template <typename T, typename ...Types>
-void read(T &head, Types &...tail) {
+inline void read(T &head, Types &...tail) {
     head = read<T>();
     read(tail...);
 }
 
 template <typename T>
-std::vector<T> readVector(size_t n) {
+inline std::vector<T> readVector(uint32_t n) {
     std::vector<T> result(n);
-    for (size_t i = 0; i < n; ++i) {
+    for (uint32_t i = 0; i < n; ++i) {
         result[i] = read<T>();
     }
     return result;
 }
 
 template <typename T>
-void readVector(std::vector<T> &vec) {
+inline void readVector(std::vector<T> &vec) {
     for (T &elem : vec) {
         elem = read<T>();
     }
@@ -167,18 +168,18 @@ void readVector(std::vector<T> &vec) {
 namespace write_private {
 
     static const int buf_size = 4096;
-    static size_t current_pos = 0;
+    static uint32_t current_pos = 0;
     static unsigned char output_buf[buf_size];
 
-    void writeBuffer() {
-        size_t printed = 0;
+    inline void writeBuffer() {
+        uint32_t printed = 0;
         while (printed < current_pos) {
             printed += fwrite(output_buf, 1, current_pos - printed, stdout);
         }
         current_pos = 0;
     }
 
-    void flush() {
+    inline void flush() {
         writeBuffer();
         fflush(stdout);
     }
@@ -189,7 +190,7 @@ namespace write_private {
         }
     } flusher_;
 
-    void writeChar(char c) {
+    inline void writeChar(char c) {
         output_buf[current_pos++] = c;
         if (current_pos == buf_size) {
             writeBuffer();
@@ -197,7 +198,7 @@ namespace write_private {
     }
 
     template<typename T>
-    void writeNum(T num) {
+    inline void writeNum(T num) {
         static_assert(std::is_integral<T>::value, "T must be integral");
         if (num == 0) {
             writeChar('0');
@@ -207,19 +208,20 @@ namespace write_private {
             writeChar('-');
             num *= -1;
         }
-        std::vector<char> result;
-        result.reserve(20);
+        static char res[100];
+        int pos = 0;
         while (num != 0) {
-            result.push_back('0' + num % 10);
+            res[pos++] = '0' + num % 10;
             num /= 10;
         }
-        for (size_t i = result.size(); i >= 1; --i) {
-            writeChar(result[i - 1]);
+        res[pos] = 0;
+        for (int i = pos - 1; i >= 0; --i) {
+            writeChar(res[i]);
         }
     }
 
     template<typename T, typename C = int>
-    void writeFloatingPoint(T num, size_t decimalPlaces = 6) {
+    inline void writeFloatingPoint(T num, uint32_t decimalPlaces = 6) {
         static_assert(std::is_floating_point<T>::value, "T must be floating point");
         static_assert(std::is_integral<C>::value, "C must be integral");
         if (num < 0) {
@@ -231,7 +233,7 @@ namespace write_private {
         if (decimalPlaces > 0) {
             writeChar('.');
             T decimal = num - intPart;
-            for (size_t i = 0; i < decimalPlaces; ++i) {
+            for (uint32_t i = 0; i < decimalPlaces; ++i) {
                 decimal *= 10;
                 int dig = std::min(9, static_cast<int>(decimal));
                 writeChar('0' + dig);
@@ -240,7 +242,7 @@ namespace write_private {
         }
     }
 
-    void writeString(const std::string &s) {
+    inline void writeString(const std::string &s) {
         for (char c : s) {
             writeChar(c);
         }
@@ -248,14 +250,13 @@ namespace write_private {
 
 }
 
-
 template <int N>
-void write(const char (&arr)[N]) {
+inline void write(const char (&arr)[N]) {
     write_private::writeString(std::string(arr));
 }
 
 template<typename T>
-void write(const T &elem) {
+inline void write(const T &elem) {
     if constexpr (std::is_same<T, char>::value) {
         write_private::writeChar(elem);
         return;
@@ -275,45 +276,45 @@ void write(const T &elem) {
 }
 
 template <typename T, typename ...Types>
-void write(const T &head, const Types &...tail) {
+inline void write(const T &head, const Types &...tail) {
     write<T>(head);
     write(tail...);
 }
 
 template <typename T>
-void writeSep(char sep, const T &head) {
+inline void writeSep(char sep, const T &head) {
     write<T>(head);
 }
 
 template <typename T, typename ...Types>
-void writeSep(char sep, const T &head, const Types &...tail) {
+inline void writeSep(char sep, const T &head, const Types &...tail) {
     write<T>(head);
     write(sep);
     writeSep(sep, tail...);
 }
 
 template <typename T>
-void writelnSep(char sep, const T &head) {
+inline void writelnSep(char sep, const T &head) {
     write<T>(head);
     write('\n');
 }
 
 template <typename T, typename ...Types>
-void writelnSep(char sep, const T &head, const Types &...tail) {
+inline void writelnSep(char sep, const T &head, const Types &...tail) {
     write<T>(head);
     write(sep);
     writelnSep(sep, tail...);
 }
 
 template <typename T, typename C>
-void writeFloatingPoint(const T &elem, size_t decimalPlaces) {
+inline void writeFloatingPoint(const T &elem, uint32_t decimalPlaces) {
     static_assert(std::is_floating_point<T>::value, "T must be floating point");
     static_assert(std::is_integral<C>::value, "C must be integral");
     write_private::writeFloatingPoint<T, C>(elem, decimalPlaces);
 }
 
 template <typename T>
-void writeVector(const std::vector<T> &vec, const std::string& sep, const std::string& end) {
+inline void writeVector(const std::vector<T> &vec, const std::string& sep, const std::string& end) {
     bool isFirst = true;
     for (const T &elem : vec) {
         if (!isFirst) {
@@ -326,7 +327,7 @@ void writeVector(const std::vector<T> &vec, const std::string& sep, const std::s
 }
 
 template <typename ...Types>
-void writeln(const Types &...tail) {
+inline void writeln(const Types &...tail) {
     write(tail...);
     write('\n');
 }
